@@ -12,6 +12,12 @@ import {
   Card,
   CardContent,
   CardHeader,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   useMediaQuery,
 } from '@mui/material';
 import { useTheme as useMuiTheme } from '@mui/material/styles';
@@ -94,6 +100,9 @@ const AdmissionDashboard = () => {
       { name: 'Pending', value: data.pendingApplications, color: muiTheme.palette.warning.main },
     ];
   }, [data, muiTheme.palette]);
+
+  const programsList = useMemo(() => (data && data.applicationsPerProgram ? data.applicationsPerProgram : []), [data]);
+  const programsTotal = useMemo(() => programsList.reduce((s, p) => s + (p.count || 0), 0), [programsList]);
 
   if (error && !data) {
     return (
@@ -236,27 +245,51 @@ const AdmissionDashboard = () => {
                   />
                   <CardContent sx={{ pt: 0 }}>
                     {data.applicationsPerProgram.length > 0 ? (
-                      <ResponsiveContainer width="100%" height={isMobile ? 250 : 300}>
-                        <BarChart data={data.applicationsPerProgram}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                          <XAxis
-                            dataKey="program"
-                            angle={isMobile ? -45 : 0}
-                            height={isMobile ? 80 : 60}
-                            interval={0}
-                            tick={{ fontSize: isMobile ? 12 : 14 }}
-                          />
-                          <YAxis tick={{ fontSize: isMobile ? 12 : 14 }} />
-                          <Tooltip
-                            contentStyle={{
-                              backgroundColor: '#fff',
-                              border: '1px solid #ccc',
-                              borderRadius: '8px',
-                            }}
-                          />
-                          <Bar dataKey="count" fill={muiTheme.palette.primary.main} radius={[8, 8, 0, 0]} />
-                        </BarChart>
-                      </ResponsiveContainer>
+                      <>
+                        <ResponsiveContainer width="100%" height={isMobile ? 250 : 300}>
+                          <BarChart data={data.applicationsPerProgram}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                            <XAxis
+                              dataKey="program"
+                              angle={isMobile ? -45 : 0}
+                              height={isMobile ? 80 : 60}
+                              interval={0}
+                              tick={{ fontSize: isMobile ? 12 : 14 }}
+                            />
+                            <YAxis tick={{ fontSize: isMobile ? 12 : 14 }} />
+                            <Tooltip
+                              contentStyle={{
+                                backgroundColor: '#fff',
+                                border: '1px solid #ccc',
+                                borderRadius: '8px',
+                              }}
+                            />
+                            <Bar dataKey="count" fill={muiTheme.palette.primary.main} radius={[8, 8, 0, 0]} />
+                          </BarChart>
+                        </ResponsiveContainer>
+                        <TableContainer sx={{ mt: 2 }}>
+                          <Table size={isMobile ? 'small' : 'medium'}>
+                            <TableHead>
+                              <TableRow>
+                                <TableCell>Program</TableCell>
+                                <TableCell align="right">Applicants</TableCell>
+                                <TableCell align="right">%</TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {programsList.map((row) => (
+                                <TableRow key={row.program}>
+                                  <TableCell component="th" scope="row">
+                                    {row.program}
+                                  </TableCell>
+                                  <TableCell align="right">{(row.count || 0).toLocaleString()}</TableCell>
+                                  <TableCell align="right">{programsTotal ? ((row.count || 0) / programsTotal * 100).toFixed(1) : '0.0'}%</TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
+                      </>
                     ) : (
                       <Typography sx={{ color: '#999', textAlign: 'center', py: 4 }}>
                         No data available

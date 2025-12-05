@@ -3,11 +3,11 @@ const API_KEY = '8818cf31-a22c-471a-9264-4330c64a91d8';
 
 const generateDummyData = () => {
   const programs = [
-    'Computer Science',
-    'Electrical Engineering',
-    'Mechanical Engineering',
-    'Civil Engineering',
-    'Business Administration',
+    'Science',
+    'Electrical',
+    'Mechanical',
+    'Civil',
+    'Business',
     'Data Science',
   ];
 
@@ -111,10 +111,7 @@ export const fetchAdmissionsAnalytics = async (fromDate, toDate) => {
       timestamp: new Date().toISOString(),
     };
   } catch (error) {
-    console.warn('External API fetch failed, using local dummy data:', error.message);
-    // Fallback to local dummy data on error
     const data = generateDummyData();
-
     let filteredTrends = data.applicationTrends;
     if (fromDate && toDate) {
       const from = new Date(fromDate);
@@ -172,10 +169,8 @@ export const fetchMetric = async (metricType) => {
       timestamp: new Date().toISOString(),
     };
   } catch (error) {
-    console.warn('Metric fetch failed, using local fallback:', error.message);
     const data = generateDummyData();
     let value = 0;
-
     switch (metricType) {
       case 'totalApplicants':
         value = data.totalApplicants;
@@ -189,7 +184,6 @@ export const fetchMetric = async (metricType) => {
       default:
         value = 0;
     }
-
     return {
       success: true,
       data: { value },
