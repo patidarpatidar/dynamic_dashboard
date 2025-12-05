@@ -76,22 +76,16 @@ const normalizeApiResponse = (apiData) => {
 
 export const fetchAdmissionsAnalytics = async (fromDate, toDate) => {
   try {
-    // Try to fetch from external API
     const response = await fetch(API_ENDPOINT, {
       headers: {
         'X-AUTH-TOKEN': API_KEY,
       },
     });
-
     if (!response.ok) {
       throw new Error(`API responded with status ${response.status}`);
     }
-
-    const data = await response.json();
-    console.log(data);
-    
+    const data = await response.json();    
     const apiData = normalizeApiResponse(data);
-
     let filteredTrends = apiData.applicationTrends;
     if (fromDate && toDate) {
       const from = new Date(fromDate);
@@ -100,7 +94,6 @@ export const fetchAdmissionsAnalytics = async (fromDate, toDate) => {
         trend => trend.dateObj >= from && trend.dateObj <= to
       );
     }
-
     return {
       success: true,
       source: 'external_api',
@@ -120,7 +113,6 @@ export const fetchAdmissionsAnalytics = async (fromDate, toDate) => {
         trend => trend.dateObj >= from && trend.dateObj <= to
       );
     }
-
     return {
       success: true,
       source: 'local_fallback',
